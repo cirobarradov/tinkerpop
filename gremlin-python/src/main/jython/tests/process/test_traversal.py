@@ -82,3 +82,22 @@ class TestTraversal(object):
         assert 0 == len(bytecode.bindings.keys())
         assert 0 == len(bytecode.source_instructions)
         assert 0 == len(bytecode.step_instructions)
+
+    def test_clone_traversal(self):
+        g = Graph().traversal()
+        original = g.V().out("created")
+        clone = original.clone().out("knows")
+        cloneClone = clone.clone().out("created")
+
+        assert 2 == len(original.bytecode.step_instructions)
+        assert 3 == len(clone.bytecode.step_instructions)
+        assert 4 == len(cloneClone.bytecode.step_instructions)
+
+        original.has("person", "name", "marko")
+        clone.V().out()
+
+        assert 3 == len(original.bytecode.step_instructions)
+        assert 5 == len(clone.bytecode.step_instructions)
+        assert 4 == len(cloneClone.bytecode.step_instructions)
+
+
